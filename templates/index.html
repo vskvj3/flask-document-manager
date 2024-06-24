@@ -2,7 +2,7 @@
 {% block title %}Home Page{% endblock %}
 {% block content %}
     <h1>Document Management System</h1>
-    <a href="">Upload New Document</a>
+    <a href="{{ url_for('upload')}}">Upload New Document</a>
     <ul>
         {% for document in documents %}
             <li>

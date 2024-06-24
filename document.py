@@ -45,3 +45,14 @@ class DocumentManager:
                 return cursor.fetchone()
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not get document") from e
+        
+    def get_all_documents(self):
+        try:
+            with self.connection:
+                cursor = self.connection.execute(
+                    '''
+                    SELECT * FROM documents
+                    ''')
+                return cursor.fetchall()
+        except sqlite3.Error as e:
+            raise sqlite3.Error("Could not get document") from e

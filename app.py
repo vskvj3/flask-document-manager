@@ -11,7 +11,8 @@ documents = DocumentManager()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    document_files = documents.get_all_documents()
+    return render_template('index.html', documents=document_files)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -24,11 +25,12 @@ def upload():
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
             documents.add_document(title, description, file_path)
-            flash('Document uploaded successfully!', 'success')
+            print('Document uploaded successfully!')
             return redirect(url_for('index'))
         else:
-            flash('No file selected!', 'danger')
-    
+            print('No file selected!')
+            
+
     return render_template('upload.html')
 if __name__ == '__main__':
     app.run(debug=True)

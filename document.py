@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class DocumentManager:
     def __init__(self, db_name='data/files.sqlite'):
         try:
@@ -9,7 +10,7 @@ class DocumentManager:
             raise sqlite3.Error("Could not connect database") from e
         except AttributeError as e:
             raise AttributeError("Could not create table") from e
-        
+
     def create_table(self):
         try:
             with self.connection:
@@ -23,7 +24,7 @@ class DocumentManager:
                     )''')
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not create database") from e
-        
+
     def add_document(self, title, description, file_path):
         try:
             with self.connection:
@@ -34,7 +35,7 @@ class DocumentManager:
                     ''', (title, description, file_path))
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not add document", e) from e
-        
+
     def get_document(self, id):
         try:
             with self.connection:
@@ -42,10 +43,17 @@ class DocumentManager:
                     '''
                     SELECT * FROM documents WHERE id=?
                     ''', (id,))
-                return cursor.fetchone()
+                document = cursor.fetchone()
+                document_dict = {
+                    'id': document[0],
+                    'title': document[1],
+                    'description': document[2],
+                    'file_path': document[3]
+                }
+                return document_dict
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not get document") from e
-        
+
     def get_all_documents(self):
         try:
             with self.connection:
@@ -53,6 +61,16 @@ class DocumentManager:
                     '''
                     SELECT * FROM documents
                     ''')
-                return cursor.fetchall()
+                document_files = cursor.fetchall()
+            documents_list = []
+            for document in document_files:
+                documents_list.append({
+                    'id': document[0],
+                    'title': document[1],
+                    'description': document[2],
+                    'file_path': document[3]
+                })
+            return documents_list
+
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not get document") from e

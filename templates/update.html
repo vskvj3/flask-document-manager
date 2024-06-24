@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+{% block content %}
+    <h1>Update Document</h1>
+    <form action="{{ url_for('update_document', id=document.id) }}"
+          method="POST"
+          enctype="multipart/form-data">
+        <label for="title">Title:</label>
+        <input type="text"
+               id="title"
+               name="title"
+               value="{{ document.title }}"
+               required>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required>{{ document.description }}</textarea>
+        <label for="file">Replace File (optional):</label>
+        <input type="file" id="file" name="file">
+        <button type="submit">Update</button>
+    </form>
+{% endblock %}

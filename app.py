@@ -13,15 +13,8 @@ documents = DocumentManager()
 def index():
     document_files = documents.get_all_documents()
     print(document_files)
-    documents_list = []
-    for document in document_files:
-        documents_list.append({
-            'id': document[0],
-            'title': document[1],
-            'description': document[2],
-            'file_path': document[3]
-        })
-    return render_template('index.html', documents=documents_list)
+    
+    return render_template('index.html', documents=document_files)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -44,11 +37,39 @@ def view_document(id):
     document_file = documents.get_document(id)
     return render_template('view.html', document=document_file)
 
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update_document(id):
+    document = documents.get_document(id)
+    print(document)
+    if request.method == 'POST':
+        document.title = request.form['title']
+        document.description = request.form['description']
+        file = request.files['file']
+        
+        if file:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
+            document.file_path = file_path
+        
+        return redirect(url_for('index'))
+    
+    return render_template('update.html', document=document)
 
 @app.route('/download/<int:id>')
 def download_document(id):
     document_file = documents.get_document(id)
     return send_file(document_file[3], as_attachment=True)
+
+@app.route('/delete/<int:id>', methods=['POST'])
+def delete_document(id):
+    document_file = documents.get_document(id)
+    os.remove(document_file[3])
+    documents.delete_document(id)
+    return redirect(url_for('index'))
+
+
+
+
             
 
     return render_template('upload.html')

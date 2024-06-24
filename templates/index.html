@@ -2,17 +2,16 @@
 {% block title %}Home Page{% endblock %}
 {% block content %}
     <h1>Document Management System</h1>
-    <a href="{{ url_for('upload')}}">Upload New Document</a>
+    <a href="{{ url_for("upload") }}">Upload New Document</a>
     <ul>
         {% for document in documents %}
             <li>
                 <h2>{{ document.title }}</h2>
                 <p>{{ document.description }}</p>
+                <p>id: {{ document.id }}</p>
                 <a href="{{ url_for('view_document', id=document.id) }}">View</a>
-                <a href="}">Update</a>
-                <form action=""
-                      method="POST"
-                      style="display:inline">
+                <a href="{{ url_for('update_document', id=document.id) }}">Update</a>
+                <form action="" method="POST" style="display:inline">
                     <button type="submit">Delete</button>
                 </form>
                 <a href="{{ url_for('download_document', id=document.id) }}">Download</a>

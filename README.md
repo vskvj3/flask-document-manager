@@ -11,6 +11,8 @@ DocumentManger-Visakh/
         upload.html
         view.html
     uploads/
+    tests/
+        test_document_manager.py
     app.py
     documet_manager.py
 ```
@@ -24,7 +26,8 @@ DocumentManger-Visakh/
 - flask application.
 #### document_manager.py
 - module with DocumentManager class to handle the database operations.
-  
+#### tests/
+- some basic tests cases to ensure the working of DocumentManger class.
 
 ### How to run the app
 Install dependencies:
@@ -42,6 +45,7 @@ python app.py
 - flask_wtf: wtforms support in flask.
 - pylint: linting python files.
 - djlint: linting jinja2 templates.
+- unittest: testing document manager class.
 
 ### Design
 - UI of the flask app is developed using bootstrap with jinja templates.

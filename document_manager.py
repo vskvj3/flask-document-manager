@@ -30,7 +30,7 @@ class DocumentManager:
 
         Raises:
             sqlite3.Error: If there is an error connecting to the database.
-            AttributeError: If there is an error creating the table.
+            AttributeError: If there is an error creating the table(name issue etc.).
         """
         try:
             self.connection = sqlite3.connect(db_name, check_same_thread=False)
@@ -69,6 +69,7 @@ class DocumentManager:
         Parameters:
             title (str): The title of the document.
             description (str): The description of the document.
+            upload_date: (date): The date the document was uploaded (DD-MM-YY HH:MM format).
             file_path (str): The file path of the document.
 
         Raises:

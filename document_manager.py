@@ -2,7 +2,6 @@
 DocumentManger class to handle the CRUD operations on the documents table in the SQLite database.
 '''
 import sqlite3
-import datetime
 
 
 class DocumentManager:

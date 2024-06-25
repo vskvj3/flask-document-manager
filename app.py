@@ -9,7 +9,7 @@ from flask import Flask, render_template, redirect, url_for, send_file, flash, r
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, FileField, SubmitField
 from wtforms.validators import DataRequired
-from document import DocumentManager
+from document_manager import DocumentManager
 
 app = Flask(__name__)
 

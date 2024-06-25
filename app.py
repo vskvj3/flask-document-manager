@@ -5,7 +5,7 @@ Flask Application
 import os
 import datetime
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, send_file, flash
+from flask import Flask, render_template, redirect, url_for, send_file, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, FileField, SubmitField
 from wtforms.validators import DataRequired
@@ -20,6 +20,9 @@ document_manager = DocumentManager()
 
 
 class UploadForm(FlaskForm):
+    '''
+    Form to upload the document.
+    '''
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     file = FileField('File', validators=[DataRequired()])
@@ -27,6 +30,9 @@ class UploadForm(FlaskForm):
 
 
 class UpdateForm(FlaskForm):
+    '''
+    Form to update the document.
+    '''
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     file = FileField('Replace File (optional)')
@@ -77,7 +83,7 @@ def upload():
                 new_file_path = f'{file_name}_{timestamp}{file_extension}'
                 file_path = new_file_path
 
-                file.save(file_path)    
+                file.save(file_path)
 
                 document_manager.add_document(title, description, file_path)
                 flash('Document uploaded successfully!')
@@ -123,16 +129,24 @@ def update_document(doc_id):
         If the request method is GET, renders the update.html template.
         If the request method is POST, updates the document with given data.
     """
-
-    if request.method == 'POST':
+    document = document_manager.get_document(doc_id)
+    form = UpdateForm(obj=document)
+    if form.validate_on_submit():
         try:
-            title = request.form['title']
-            description = request.form['description']
-            file = request.files['file']
+            title = form.title.data
+            description = form.description.data
+            file = form.file.data
 
             if file:
                 file_path = os.path.join(
                     app.config['UPLOAD_FOLDER'], file.filename)
+
+                # add time with file name to avodoc_id copy
+                file_name, file_extension = os.path.splitext(file_path)
+                timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+                new_file_path = f'{file_name}_{timestamp}{file_extension}'
+                file_path = new_file_path
+
                 file.save(file_path)
                 new_file_path = file_path
 
@@ -147,16 +161,17 @@ def update_document(doc_id):
             document_manager.update_document(doc_id, update_dict)
 
             flash('Document updated successfully!', 'success')
+            return redirect(url_for('index'))
         except sqlite3.Error:
             flash('Could not update document', 'error')
-        return redirect(url_for('index'))
+            return redirect(url_for('index'))
 
     try:
         document = document_manager.get_document(doc_id)
     except sqlite3.Error:
         flash('Could not get document', 'error')
         document = {}
-    return render_template('update.html', document=document)
+    return render_template('update.html', form=form, document=document)
 
 
 @app.route('/download/<int:doc_id>')
@@ -172,7 +187,6 @@ def download_document(doc_id):
     """
     try:
         document_file = document_manager.get_document(doc_id)
-        flash('Document downloaded successfully!', 'success')
         return send_file(document_file["file_path"], as_attachment=True)
     except FileNotFoundError:
         flash('File not found!!', 'error')

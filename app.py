@@ -6,6 +6,9 @@ import os
 import datetime
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, send_file, flash
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, FileField, SubmitField
+from wtforms.validators import DataRequired
 from document import DocumentManager
 
 app = Flask(__name__)
@@ -14,6 +17,20 @@ app.config['SECRET_KEY'] = 'supersecretkey'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 document_manager = DocumentManager()
+
+
+class UploadForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    file = FileField('File', validators=[DataRequired()])
+    submit = SubmitField('Upload')
+
+
+class UpdateForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    file = FileField('Replace File (optional)')
+    submit = SubmitField('Update')
 
 
 @app.route('/')
@@ -42,11 +59,13 @@ def upload():
         If the request method is POST, stores the file and stored the data in db.
         If the request method is POST and no file is selected, prints an error message.
     """
-    if request.method == 'POST':
+    form = UploadForm()
+
+    if form.validate_on_submit():
         try:
-            title = request.form['title']
-            description = request.form['description']
-            file = request.files['file']
+            title = form.title.data
+            description = form.description.data
+            file = form.file.data
 
             if file:
                 file_path = os.path.join(
@@ -58,18 +77,19 @@ def upload():
                 new_file_path = f'{file_name}_{timestamp}{file_extension}'
                 file_path = new_file_path
 
-                file.save(file_path)
+                file.save(file_path)    
 
                 document_manager.add_document(title, description, file_path)
                 flash('Document uploaded successfully!')
-            return redirect(url_for('index'))
+                return redirect(url_for('index'))
         except sqlite3.Error:
             flash("Could not upload document")
             return render_template('upload.html')
         except PermissionError as e:
             flash("Error: " + str(e))
             return render_template('upload.html')
-    return render_template('upload.html')
+
+    return render_template('upload.html', form=form)
 
 
 @app.route('/document/<int:doc_id>')
@@ -128,7 +148,7 @@ def update_document(doc_id):
 
             flash('Document updated successfully!', 'success')
         except sqlite3.Error:
-            flash('Could not update document' , 'error')
+            flash('Could not update document', 'error')
         return redirect(url_for('index'))
 
     try:

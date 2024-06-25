@@ -1,17 +1,28 @@
 {% extends "base.html" %}
 {% block title %}Home Page{% endblock %}
 {% block content %}
-    <h1>Update Document</h1>
-    <form action="{{ url_for('update_document', doc_id=document.doc_id) }}"
-          method="POST"
-          enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <label for="title">Title:</label>
-        {{ form.title(size=32) }}
-        <label for="description">Description:</label>
-        {{ form.description(cols=32, rows=4) }}
-        <label for="file">Replace File (optional):</label>
-        {{ form.file() }}
-        {{ form.submit() }}
-    </form>
+    <div class="container border rounded form-container py-3">
+        <h1><center>Update Document</center></h1>
+        <form action="{{ url_for('update_document', doc_id=document.doc_id) }}"
+              method="POST"
+              enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="title">Title:</label>
+                {{ form.title(class_="form-control") }}
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                {{ form.description(cols=32, rows=4, class_="form-control") }}
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="file">Replace File (optional):</label>
+                {{ form.file(class_="form-control") }}
+            </div>
+            <br>
+            {{ form.submit(class_="btn btn-primary") }}
+        </form>
+    </div>
 {% endblock %}

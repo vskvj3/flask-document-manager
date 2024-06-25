@@ -1,22 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Upload Page{% endblock %}
 {% block content %}
-    <div class="container border rounded form-container">
-        <h1><center>Upload Document</center></h1>
+    <div class="container border rounded form-container py-3">
+        <h1>
+            <center>Upload Document</center>
+        </h1>
         <form action="{{ url_for("upload") }}"
               method="POST"
               enctype="multipart/form-data"
               class="form form-horizontal"
-              role="form"
-              >
+              role="form">
             {{ form.hidden_tag() }}
-            <label for="title">Title:</label>
-            {{ form.title(size=32) }}
-            <label for="description">Description:</label>
-            {{ form.description(cols=32, rows=4) }}
-            <label for="file">File:</label>
-            {{ form.file() }}
-            {{ form.submit() }}
+            <div class="form-group">
+                <label for="title" class="form-label">Title:</label>
+                {{ form.title(class_="form-control") }}
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                {{ form.description(cols=32, rows=4, class_="form-control") }}
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="file">File:</label>
+                {{ form.file(class_="form-control") }}
+            </div>
+            <br>
+            {{ form.submit(class_="btn btn-primary") }}
         </form>
     </div>
 {% endblock %}

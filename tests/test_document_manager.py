@@ -28,9 +28,9 @@ class DocumentManagerTests(unittest.TestCase):
         Test the add_document method.
         """
         self.manager.add_document(
-            'Document 1', 'Description 1', '2022-01-01', '/path/to/document1')
+            'Document 1', 'Description 1', '2049-01-01', '/path/to/document1')
         self.manager.add_document(
-            'Document 2', 'Description 2', '2022-01-02', '/path/to/document2')
+            'Document 2', 'Description 2', '2049-01-02', '/path/to/document2')
         documents = self.manager.get_all_documents()
         self.assertEqual(len(documents), 2)
         self.assertEqual(documents[0]['title'], 'Document 1')
@@ -41,9 +41,9 @@ class DocumentManagerTests(unittest.TestCase):
         Test the delete_document method.
         """
         self.manager.add_document(
-            'Document 1', 'Description 1', '2022-01-01', '/path/to/document1')
+            'Document 1', 'Description 1', '2049-01-01', '/path/to/document1')
         self.manager.add_document(
-            'Document 2', 'Description 2', '2022-01-02', '/path/to/document2')
+            'Document 2', 'Description 2', '2049-01-02', '/path/to/document2')
         documents = self.manager.get_all_documents()
         self.assertEqual(len(documents), 2)
         self.manager.delete_document(documents[0]['doc_id'])
@@ -56,7 +56,7 @@ class DocumentManagerTests(unittest.TestCase):
         Test the update_document method.
         """
         self.manager.add_document(
-            'Document 1', 'Description 1', '2022-01-01', '/path/to/document1')
+            'Document 1', 'Description 1', '2049-01-01', '/path/to/document1')
         documents = self.manager.get_all_documents()
         self.assertEqual(len(documents), 1)
         doc_id = documents[0]['doc_id']
@@ -72,7 +72,7 @@ class DocumentManagerTests(unittest.TestCase):
         Test the get_document method.
         """
         self.manager.add_document(
-            'Document 1', 'Description 1', '2022-01-01', '/path/to/document1')
+            'Document 1', 'Description 1', '2049-01-01', '/path/to/document1')
         documents = self.manager.get_all_documents()
         self.assertEqual(len(documents), 1)
         doc_id = documents[0]['doc_id']
@@ -85,9 +85,9 @@ class DocumentManagerTests(unittest.TestCase):
         Test the get_all_documents method.
         """
         self.manager.add_document(
-            'Document 1', 'Description 1', '2022-01-01', '/path/to/document1')
+            'Document 1', 'Description 1', '2049-01-01', '/path/to/document1')
         self.manager.add_document(
-            'Document 2', 'Description 2', '2022-01-02', '/path/to/document2')
+            'Document 2', 'Description 2', '2049-01-02', '/path/to/document2')
         documents = self.manager.get_all_documents()
         self.assertEqual(len(documents), 2)
         self.assertEqual(documents[0]['title'], 'Document 1')

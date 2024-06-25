@@ -155,7 +155,7 @@ class DocumentManager:
                 }
                 return document_dict
         except sqlite3.Error as e:
-            raise sqlite3.Error("Could not get document") from e
+            raise sqlite3.Error("Could not get document", e) from e
 
     def get_all_documents(self):
         """

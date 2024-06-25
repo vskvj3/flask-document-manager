@@ -48,7 +48,7 @@ def upload():
             file_path = os.path.join(
                 app.config['UPLOAD_FOLDER'], file.filename)
 
-            # add time with file name to avoid copy
+            # add time with file name to avodoc_id copy
             file_name, file_extension = os.path.splitext(file_path)
             timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
             new_file_path = f"{file_name}_{timestamp}{file_extension}"
@@ -62,34 +62,34 @@ def upload():
     return render_template('upload.html')
 
 
-@app.route('/document/<int:id>')
-def view_document(id):
+@app.route('/document/<int:doc_id>')
+def view_document(doc_id):
     """
     Renders the view page for a specific document.
 
     Args:
-        id (int): The ID of the document to view.
+        doc_id (int): The doc_id of the document to view.
 
     Returns:
         The rendered view.html template with the document.
     """
-    document_file = document_manager.get_document(id)
+    document_file = document_manager.get_document(doc_id)
     return render_template('view.html', document=document_file)
 
 
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update_document(id):
+@app.route('/update/<int:doc_id>', methods=['GET', 'POST'])
+def update_document(doc_id):
     """
     Handles the update of a document.
 
     Args:
-        id (int): The ID of the document to update.
+        doc_id (int): The doc_id of the document to update.
 
     Returns:
         If the request method is GET, renders the update.html template.
         If the request method is POST, updates the document with given data.
     """
-    document = document_manager.get_document(id)
+    document = document_manager.get_document(doc_id)
     print(document)
     if request.method == 'POST':
         title = request.form['title']
@@ -110,7 +110,7 @@ def update_document(id):
         if file:
             update_dict['file_path'] = new_file_path
 
-        document_manager.update_document(id, update_dict)
+        document_manager.update_document(doc_id, update_dict)
 
         print('Document updated successfully!')
 
@@ -119,36 +119,36 @@ def update_document(id):
     return render_template('update.html', document=document)
 
 
-@app.route('/download/<int:id>')
-def download_document(id):
+@app.route('/download/<int:doc_id>')
+def download_document(doc_id):
     """
     Downloads a specific document.
 
     Args:
-        id (int): The ID of the document to download.
+        doc_id (int): The doc_id of the document to download.
 
     Returns:
         The document file as an attachment.
     """
-    document_file = document_manager.get_document(id)
+    document_file = document_manager.get_document(doc_id)
     return send_file(document_file["file_path"], as_attachment=True)
 
 
-@app.route('/delete/<int:id>', methods=['POST'])
-def delete_document(id):
+@app.route('/delete/<int:doc_id>', methods=['POST'])
+def delete_document(doc_id):
     """
     Deletes a specific document.
 
     Args:
-        id (int): The ID of the document to delete.
+        doc_id (int): The doc_id of the document to delete.
 
     Returns:
         Redirects to the index page after deleting the document.
     """
     try:
-        document_file = document_manager.get_document(id)
+        document_file = document_manager.get_document(doc_id)
         os.remove(document_file['file_path'])
-        document_manager.delete_document(id)
+        document_manager.delete_document(doc_id)
     except FileNotFoundError as fnf:
         print("Error: ", fnf)
     return redirect(url_for('index'))

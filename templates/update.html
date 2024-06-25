@@ -2,7 +2,7 @@
 {% block title %}Home Page{% endblock %}
 {% block content %}
     <h1>Update Document</h1>
-    <form action="{{ url_for('update_document', id=document.id) }}"
+    <form action="{{ url_for('update_document', doc_id=document.doc_id) }}"
           method="POST"
           enctype="multipart/form-data">
         <label for="title">Title:</label>

@@ -28,7 +28,7 @@ def index():
         document_files = document_manager.get_all_documents()
         return render_template('index.html', documents=document_files)
     except sqlite3.Error:
-        flash("Could not get documents")
+        flash('Could not get documents', 'error')
         return render_template('index.html', documents=[])
 
 
@@ -54,8 +54,8 @@ def upload():
 
                 # add time with file name to avodoc_id copy
                 file_name, file_extension = os.path.splitext(file_path)
-                timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-                new_file_path = f"{file_name}_{timestamp}{file_extension}"
+                timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+                new_file_path = f'{file_name}_{timestamp}{file_extension}'
                 file_path = new_file_path
 
                 file.save(file_path)
@@ -86,7 +86,7 @@ def view_document(doc_id):
     try:
         document_file = document_manager.get_document(doc_id)
     except sqlite3.Error:
-        flash("Could not get document")
+        flash('Could not get document', 'error')
         document_file = {}
     return render_template('view.html', document=document_file)
 
@@ -126,15 +126,15 @@ def update_document(doc_id):
 
             document_manager.update_document(doc_id, update_dict)
 
-            flash('Document updated successfully!')
+            flash('Document updated successfully!', 'success')
         except sqlite3.Error:
-            flash("Could not update document")
+            flash('Could not update document' , 'error')
         return redirect(url_for('index'))
 
     try:
         document = document_manager.get_document(doc_id)
     except sqlite3.Error:
-        flash("Could not get document")
+        flash('Could not get document', 'error')
         document = {}
     return render_template('update.html', document=document)
 
@@ -152,12 +152,13 @@ def download_document(doc_id):
     """
     try:
         document_file = document_manager.get_document(doc_id)
+        flash('Document downloaded successfully!', 'success')
         return send_file(document_file["file_path"], as_attachment=True)
     except FileNotFoundError:
-        flash("File not found!!")
+        flash('File not found!!', 'error')
         return redirect(url_for('index'))
     except sqlite3.Error:
-        flash("Could not find document in database")
+        flash('Could not find document in database', 'error')
         return redirect(url_for('index'))
 
 
@@ -176,10 +177,11 @@ def delete_document(doc_id):
         document_file = document_manager.get_document(doc_id)
         os.remove(document_file['file_path'])
         document_manager.delete_document(doc_id)
+        flash('Document deleted successfully', 'success')
     except FileNotFoundError:
-        flash("File not found!!")
+        flash('File not found!!', 'error')
     except sqlite3.Error:
-        flash("Could not delete document")
+        flash('Could not delete document', 'error')
     return redirect(url_for('index'))
 
 

@@ -1,12 +1,18 @@
 body {
-    font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
+.form-container {
+  margin-top: 5%;
+}
 
-  .form-container {
-    margin-top: 5%;
-  }
+.success {
+    border-color: green;
+}
 
-  .view-field {
-    margin-top: 5%;
-  }
+.error {
+    border-color: red;
+}
+.view-field {
+  margin-top: 5%;
+}

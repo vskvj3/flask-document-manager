@@ -3,10 +3,10 @@
 {% block sidebar %}<a href="{{ url_for("index") }}" class="btn btn-primary mt-5">Back to Home</a>{% endblock %}
 {% block content %}
     <div class="mt-5">
-        <div class="border rounded pb-3 px-3">
-            <h1>
-                <center>View Document</center>
-            </h1>
+        <h1>
+            <center>View Document</center>
+        </h1>
+        <div class="border rounded p-3">
             <h2>{{ document.title }}</h2>
             <p>{{ document.description }}</p>
             <p>Uploaded on: {{ document.upload_date }}</p>

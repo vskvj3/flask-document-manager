@@ -2,9 +2,10 @@
 {% block title %}Home Page{% endblock %}
 {% block sidebar %}<a href="{{ url_for("upload") }}" class="btn btn-primary mt-5">Upload</a>{% endblock %}
 {% block content %}
-    <div class="mt-5">
-        <h1>Document Management System</h1>
+    <div class="border rounded p-3 mt-5">
+        <h1>Documents:</h1>
         <!-- document cards -->
+        {% if documents == [] %}<p>No documents found. Add some documents!!</p>{% endif %}
         {% for document in documents %}
             <div class="card mb-2">
                 <div class="card-header">{{ document.title }}</div>

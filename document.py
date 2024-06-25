@@ -1,9 +1,26 @@
+'''
+DocumentManger class to handle the CRUD operations on the documents table in the SQLite database.
+'''
 import sqlite3
-import os
-import datetime
 
 
 class DocumentManager:
+    """
+    A class for managing documents in a SQLite database.
+
+    Attributes:
+        connection (sqlite3.Connection): The connection to the SQLite database.
+
+    Methods:
+        __init__(self, db_name='data/files.sqlite'): Initializes a DocumentManager object.
+        create_table(self): Creates the 'documents' table if it doesn't exist in the database.
+        add_document(self, title, description, file_path): Adds a new document to documents table.
+        delete_document(self, doc_id): Removes an entry from the documents table using doc_id.
+        update_document(self, doc_id, update_dict): Updates a document in the documents table.
+        get_document(self, doc_id): Retrieves a document from the documents table.
+        get_all_documents(self): Retrieves all documents from the documents table.
+    """
+
     def __init__(self, db_name='data/files.sqlite'):
         """
         Initializes a DocumentManager object.
@@ -20,6 +37,7 @@ class DocumentManager:
             self.create_table()
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not connect database") from e
+
         except AttributeError as e:
             raise AttributeError("Could not create table") from e
 
@@ -35,7 +53,7 @@ class DocumentManager:
                 self.connection.execute(
                     '''
                     CREATE TABLE IF NOT EXISTS documents (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        doc_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         title TEXT,
                         description TEXT,
                         file_path TEXT
@@ -56,7 +74,6 @@ class DocumentManager:
             sqlite3.Error: If there is an error adding the document to the table.
         """
         try:
-            # 
             with self.connection:
                 self.connection.execute(
                     '''
@@ -66,12 +83,12 @@ class DocumentManager:
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not add document", e) from e
 
-    def delete_document(self, id):
+    def delete_document(self, doc_id):
         """
-        Removes an entry from the 'documents' table using the specified id.
+        Removes an entry from the 'documents' table using the specified doc_id.
 
         Parameters:
-            id (int): The id of the document to be deleted.
+            doc_id (int): The doc_id of the document to be deleted.
 
         Raises:
             sqlite3.Error: If there is an error deleting the document from the table.
@@ -80,17 +97,17 @@ class DocumentManager:
             with self.connection:
                 self.connection.execute(
                     '''
-                    DELETE FROM documents WHERE id=?
-                    ''', (id,))
+                    DELETE FROM documents WHERE doc_id=?
+                    ''', (doc_id,))
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not delete document") from e
-        
-    def update_document(self, id, update_dict):
+
+    def update_document(self, doc_id, update_dict):
         """
-         Updates a document in the 'documents' table using the specified id and update dictionary.
+         Updates a document in the documents table using the specified doc_id and update dictionary.
 
         Parameters:
-            id (int): The id of the document to be updated.
+            doc_id (int): The doc_id of the document to be updated.
             update_dict (dict): A dictionary containing the fields to be updated.
 
         Raises:
@@ -104,18 +121,18 @@ class DocumentManager:
                     update_query += f"{key}=?, "
                     update_values.append(value)
                 update_query = update_query.rstrip(", ")
-                update_query += " WHERE id=?"
-                update_values.append(id)
+                update_query += " WHERE doc_id=?"
+                update_values.append(doc_id)
                 self.connection.execute(update_query, update_values)
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not update document") from e
 
-    def get_document(self, id):
+    def get_document(self, doc_id):
         """
-        Retrieves a document from the 'documents' table using the specified id.
+        Retrieves a document from the 'documents' table using the specified doc_id.
 
         Parameters:
-            id (int): The id of the document to be retrieved.
+            doc_id (int): The doc_id of the document to be retrieved.
 
         Returns:
             dict: A dictionary containing the document information.
@@ -127,11 +144,11 @@ class DocumentManager:
             with self.connection:
                 cursor = self.connection.execute(
                     '''
-                    SELECT * FROM documents WHERE id=?
-                    ''', (id,))
+                    SELECT * FROM documents WHERE doc_id=?
+                    ''', (doc_id,))
                 document = cursor.fetchone()
                 document_dict = {
-                    'id': document[0],
+                    'doc_id': document[0],
                     'title': document[1],
                     'description': document[2],
                     'file_path': document[3]
@@ -160,7 +177,7 @@ class DocumentManager:
             documents_list = []
             for document in document_files:
                 documents_list.append({
-                    'id': document[0],
+                    'doc_id': document[0],
                     'title': document[1],
                     'description': document[2],
                     'file_path': document[3]

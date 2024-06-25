@@ -2,16 +2,11 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.sidebar {
-    margin: 0;
-    padding: 0;
-    width: 200px;
-    background-color: #f1f1f1;
-    position: fixed;
-    height: 100%;
-    overflow: auto;
-  }
 
   .form-container {
+    margin-top: 5%;
+  }
+
+  .view-field {
     margin-top: 5%;
   }

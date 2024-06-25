@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block title %}View Document{% endblock %}
+{% block sidebar %}<a href="{{ url_for("index") }}" class="btn btn-primary mt-5">Back to Home</a>{% endblock %}
 {% block content %}
-    <div class="container">
-        <div class="container border rounded form-container pb-3">
+    <div class="mt-5">
+        <div class="border rounded pb-3 px-3">
+            <h1>
+                <center>View Document</center>
+            </h1>
             <h2>{{ document.title }}</h2>
             <p>{{ document.description }}</p>
             <p>Uploaded on: {{ document.upload_date }}</p>
@@ -15,7 +19,6 @@
                   style="display:inline">
                 <button type="submit" class="btn btn-primary">Delete</button>
             </form>
-            <a href="{{ url_for("index") }}">Back to Home</a>
         </div>
     </div>
 {% endblock %}

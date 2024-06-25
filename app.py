@@ -5,7 +5,7 @@ Flask Application
 import os
 import datetime
 import sqlite3
-from flask import Flask, render_template, redirect, url_for, send_file, flash
+from flask import Flask, render_template, redirect, url_for, send_file, flash, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, FileField, SubmitField
 from wtforms.validators import DataRequired
@@ -131,6 +131,10 @@ def update_document(doc_id):
     """
     document = document_manager.get_document(doc_id)
     form = UpdateForm(obj=document)
+    if request.method == 'GET':
+        # populate the form fields with the document's data
+        form.title.data = document.get('title', '')
+        form.description.data = document.get('description', '')
     if form.validate_on_submit():
         try:
             title = form.title.data
@@ -164,6 +168,9 @@ def update_document(doc_id):
             return redirect(url_for('index'))
         except sqlite3.Error:
             flash('Error: Could not update document', category='danger')
+            return redirect(url_for('index'))
+        except PermissionError:
+            flash('Error: Could not store document!!', category='danger')
             return redirect(url_for('index'))
 
     try:

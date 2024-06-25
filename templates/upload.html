@@ -1,17 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Upload Page{% endblock %}
 {% block content %}
-    <h1>Upload Document</h1>
-    <form action="{{ url_for("upload") }}"
-          method="POST"
-          enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <label for="title">Title:</label>
-        {{ form.title(size=32) }}
-        <label for="description">Description:</label>
-        {{ form.description(cols=32, rows=4) }}
-        <label for="file">File:</label>
-        {{ form.file() }}
-        {{ form.submit() }}
-    </form>
+    <div class="container border rounded form-container">
+        <h1><center>Upload Document</center></h1>
+        <form action="{{ url_for("upload") }}"
+              method="POST"
+              enctype="multipart/form-data"
+              class="form form-horizontal"
+              role="form"
+              >
+            {{ form.hidden_tag() }}
+            <label for="title">Title:</label>
+            {{ form.title(size=32) }}
+            <label for="description">Description:</label>
+            {{ form.description(cols=32, rows=4) }}
+            <label for="file">File:</label>
+            {{ form.file() }}
+            {{ form.submit() }}
+        </form>
+    </div>
 {% endblock %}

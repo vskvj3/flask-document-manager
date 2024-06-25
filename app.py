@@ -79,13 +79,14 @@ def upload():
 
                 # add time with file name to avodoc_id copy
                 file_name, file_extension = os.path.splitext(file_path)
-                timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-                new_file_path = f'{file_name}_{timestamp}{file_extension}'
+                timestamp = datetime.datetime.now()
+                upload_date = timestamp.strftime('%d-%m-%Y %H:%M')
+                new_file_path = f'{file_name}_{timestamp.strftime('%Y%m%d%H%M%S')}{file_extension}'
                 file_path = new_file_path
 
                 file.save(file_path)
 
-                document_manager.add_document(title, description, file_path)
+                document_manager.add_document(title, description, upload_date, file_path)
                 flash('Document uploaded successfully!', category='success')
                 return redirect(url_for('index'))
         except sqlite3.Error:
@@ -147,10 +148,10 @@ def update_document(doc_id):
 
                 # add time with file name to avodoc_id copy
                 file_name, file_extension = os.path.splitext(file_path)
-                timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-                new_file_path = f'{file_name}_{timestamp}{file_extension}'
+                timestamp = datetime.datetime.now()
+                new_file_path = f'{file_name}_{timestamp.strftime('%Y%m%d%H%M%S')}{file_extension}'
                 file_path = new_file_path
-
+                update_date = timestamp.strftime('%d-%m-%Y %H:%M')
                 file.save(file_path)
                 new_file_path = file_path
 
@@ -161,6 +162,7 @@ def update_document(doc_id):
                 update_dict['description'] = description
             if file:
                 update_dict['file_path'] = new_file_path
+                update_dict['upload_date'] = update_date
 
             document_manager.update_document(doc_id, update_dict)
 

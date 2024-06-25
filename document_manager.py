@@ -2,6 +2,7 @@
 DocumentManger class to handle the CRUD operations on the documents table in the SQLite database.
 '''
 import sqlite3
+import datetime
 
 
 class DocumentManager:
@@ -56,12 +57,13 @@ class DocumentManager:
                         doc_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         title TEXT,
                         description TEXT,
+                        upload_date TEXT,
                         file_path TEXT
                     )''')
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not create database") from e
 
-    def add_document(self, title, description, file_path):
+    def add_document(self, title, description, upload_date, file_path):
         """
         Adds a new document to the 'documents' table.
 
@@ -77,9 +79,9 @@ class DocumentManager:
             with self.connection:
                 self.connection.execute(
                     '''
-                    INSERT INTO documents (title, description, file_path)
-                    VALUES (?, ?, ?)
-                    ''', (title, description, file_path))
+                    INSERT INTO documents (title, description, upload_date, file_path)
+                    VALUES (?, ?, ?, ?)
+                    ''', (title, description, upload_date, file_path))
         except sqlite3.Error as e:
             raise sqlite3.Error("Could not add document", e) from e
 
@@ -151,7 +153,8 @@ class DocumentManager:
                     'doc_id': document[0],
                     'title': document[1],
                     'description': document[2],
-                    'file_path': document[3]
+                    'upload_date': document[3],
+                    'file_path': document[4]
                 }
                 return document_dict
         except sqlite3.Error as e:

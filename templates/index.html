@@ -11,12 +11,13 @@
                 <p>doc_id: {{ document.doc_id }}</p>
                 <a href="{{ url_for('view_document', doc_id=document.doc_id) }}">View</a>
                 <a href="{{ url_for('update_document', doc_id=document.doc_id) }}">Update</a>
-                <form action="{{ url_for('delete_document', doc_id=document.doc_id) }}" method="POST" style="display:inline">
+                <form action="{{ url_for('delete_document', doc_id=document.doc_id) }}"
+                      method="POST"
+                      style="display:inline">
                     <button type="submit">Delete</button>
                 </form>
                 <a href="{{ url_for('download_document', doc_id=document.doc_id) }}">Download</a>
             </li>
         {% endfor %}
     </ul>
-    <p>{{get_flashed_messages.info}}</p>
 {% endblock %}

@@ -4,7 +4,8 @@ Flask Application
 
 import os
 import datetime
-from flask import Flask, render_template, request, redirect, url_for, send_file
+import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, send_file, flash
 from document import DocumentManager
 
 app = Flask(__name__)
@@ -23,10 +24,12 @@ def index():
     Returns:
         The rendered index.html template with the documents.
     """
-    document_files = document_manager.get_all_documents()
-    print(document_files)
-
-    return render_template('index.html', documents=document_files)
+    try:
+        document_files = document_manager.get_all_documents()
+        return render_template('index.html', documents=document_files)
+    except sqlite3.Error:
+        flash("Could not get documents")
+        return render_template('index.html', documents=[])
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -40,25 +43,32 @@ def upload():
         If the request method is POST and no file is selected, prints an error message.
     """
     if request.method == 'POST':
-        title = request.form['title']
-        description = request.form['description']
-        file = request.files['file']
+        try:
+            title = request.form['title']
+            description = request.form['description']
+            file = request.files['file']
 
-        if file:
-            file_path = os.path.join(
-                app.config['UPLOAD_FOLDER'], file.filename)
+            if file:
+                file_path = os.path.join(
+                    app.config['UPLOAD_FOLDER'], file.filename)
 
-            # add time with file name to avodoc_id copy
-            file_name, file_extension = os.path.splitext(file_path)
-            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-            new_file_path = f"{file_name}_{timestamp}{file_extension}"
-            file_path = new_file_path
+                # add time with file name to avodoc_id copy
+                file_name, file_extension = os.path.splitext(file_path)
+                timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+                new_file_path = f"{file_name}_{timestamp}{file_extension}"
+                file_path = new_file_path
 
-            file.save(file_path)
+                file.save(file_path)
 
-            document_manager.add_document(title, description, file_path)
-            print('Document uploaded successfully!')
-        return redirect(url_for('index'))
+                document_manager.add_document(title, description, file_path)
+                flash('Document uploaded successfully!')
+            return redirect(url_for('index'))
+        except sqlite3.Error:
+            flash("Could not upload document")
+            return render_template('upload.html')
+        except PermissionError as e:
+            flash("Error: " + str(e))
+            return render_template('upload.html')
     return render_template('upload.html')
 
 
@@ -73,7 +83,11 @@ def view_document(doc_id):
     Returns:
         The rendered view.html template with the document.
     """
-    document_file = document_manager.get_document(doc_id)
+    try:
+        document_file = document_manager.get_document(doc_id)
+    except sqlite3.Error:
+        flash("Could not get document")
+        document_file = {}
     return render_template('view.html', document=document_file)
 
 
@@ -89,33 +103,39 @@ def update_document(doc_id):
         If the request method is GET, renders the update.html template.
         If the request method is POST, updates the document with given data.
     """
-    document = document_manager.get_document(doc_id)
-    print(document)
+
     if request.method == 'POST':
-        title = request.form['title']
-        description = request.form['description']
-        file = request.files['file']
+        try:
+            title = request.form['title']
+            description = request.form['description']
+            file = request.files['file']
 
-        if file:
-            file_path = os.path.join(
-                app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(file_path)
-            new_file_path = file_path
+            if file:
+                file_path = os.path.join(
+                    app.config['UPLOAD_FOLDER'], file.filename)
+                file.save(file_path)
+                new_file_path = file_path
 
-        update_dict = {}
-        if title:
-            update_dict['title'] = title
-        if description:
-            update_dict['description'] = description
-        if file:
-            update_dict['file_path'] = new_file_path
+            update_dict = {}
+            if title:
+                update_dict['title'] = title
+            if description:
+                update_dict['description'] = description
+            if file:
+                update_dict['file_path'] = new_file_path
 
-        document_manager.update_document(doc_id, update_dict)
+            document_manager.update_document(doc_id, update_dict)
 
-        print('Document updated successfully!')
-
+            flash('Document updated successfully!')
+        except sqlite3.Error:
+            flash("Could not update document")
         return redirect(url_for('index'))
 
+    try:
+        document = document_manager.get_document(doc_id)
+    except sqlite3.Error:
+        flash("Could not get document")
+        document = {}
     return render_template('update.html', document=document)
 
 
@@ -130,8 +150,15 @@ def download_document(doc_id):
     Returns:
         The document file as an attachment.
     """
-    document_file = document_manager.get_document(doc_id)
-    return send_file(document_file["file_path"], as_attachment=True)
+    try:
+        document_file = document_manager.get_document(doc_id)
+        return send_file(document_file["file_path"], as_attachment=True)
+    except FileNotFoundError:
+        flash("File not found!!")
+        return redirect(url_for('index'))
+    except sqlite3.Error:
+        flash("Could not find document in database")
+        return redirect(url_for('index'))
 
 
 @app.route('/delete/<int:doc_id>', methods=['POST'])
@@ -149,8 +176,10 @@ def delete_document(doc_id):
         document_file = document_manager.get_document(doc_id)
         os.remove(document_file['file_path'])
         document_manager.delete_document(doc_id)
-    except FileNotFoundError as fnf:
-        print("Error: ", fnf)
+    except FileNotFoundError:
+        flash("File not found!!")
+    except sqlite3.Error:
+        flash("Could not delete document")
     return redirect(url_for('index'))
 
 
